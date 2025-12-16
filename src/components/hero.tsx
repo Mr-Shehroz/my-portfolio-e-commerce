@@ -1,75 +1,79 @@
-'use client';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation, Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import Link from 'next/link';
+"use client";
+
+import Link from "next/link";
+import { ChevronRight, Play, TrendingUp } from "lucide-react";
 
 const Hero = () => {
-  const slides = [
-    {
-      title: "THE GEAR YOU CAN'T COMPETE WITHOUT",
-      subtitle: "Premium sports equipment, cutting-edge technology, and championship-grade performance.",
-      image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1920&h=1080&fit=crop",
-    },
-    {
-      title: "ELEVATE YOUR GAME",
-      subtitle: "Professional-grade equipment for athletes who demand excellence.",
-      image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=1920&h=1080&fit=crop",
-    },
-    {
-      title: "THE GEAR YOU CAN'T COMPETE WITHOUT",
-      subtitle: "Premium sports equipment, cutting-edge technology, and championship-grade performance.",
-      image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1920&h=1080&fit=crop",
-    },
-    {
-      title: "ELEVATE YOUR GAME",
-      subtitle: "Professional-grade equipment for athletes who demand excellence.",
-      image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=1920&h=1080&fit=crop",
-    },
+  const heroData = {
+    title: "UNLEASH YOUR POTENTIAL",
+    subtitle: "Championship-grade equipment for athletes who refuse to settle",
+    cta: "Explore Collection",
+    image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1920&h=1080&fit=crop",
+  };
+
+  const stats = [
+    { label: "Products", value: "500+" },
+    { label: "Brands", value: "50+" },
+    { label: "Athletes", value: "50K+" },
   ];
 
   return (
-    <section className="relative h-[70vh] md:h-175 lg:min-h-[85vh] overflow-hidden">
-      <Swiper
-        modules={[Autoplay, Navigation, Pagination]}
-        pagination={{ clickable: true }}
-        autoplay={{ delay: 5000, disableOnInteraction: false }}
-        loop
-        className="h-full"
-      >
-        {slides.map((slide, idx) => (
-          <SwiperSlide key={idx} className="relative">
-            {/* Background Image */}
-            <div className="absolute inset-0">
-              <img
-                src={slide.image}
-                alt={`Slide ${idx + 1}`}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/40"></div>
-            </div>
+    <section className="relative h-screen mt-20 overflow-hidden">
+      <div className="absolute inset-0">
+        <img src={heroData.image} alt="Hero" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-linear-to-r from-black via-black/70 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent"></div>
+      </div>
 
-            {/* Content */}
-            <div className="relative z-10 max-w-360 mx-auto h-full flex items-center px-4 xl:px-10">
-              <div className="max-w-2xl text-white text-center md:text-left">
-                <h1 className="text-3xl md:text-4xl xl:text-5xl 2xl:text-6xl font-bold mb-4 animate-fadeIn">
-                  {slide.title}
-                </h1>
-                <p className="text-lg xl:text-xl mb-6 text-gray-200">
-                  {slide.subtitle}
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                  <Link href="/shop" className="bg-red-600 hover:bg-red-700 text-white 2xl:px-8 px-6 py-3 rounded font-semibold transition-all transform hover:scale-105">
-                    SHOP NOW
-                  </Link>
-                </div>
+      <div className="relative z-10 max-w-360 mx-auto px-4 xl:px-10 h-full flex items-center">
+        <div className="max-w-3xl">
+          <div className="inline-flex items-center gap-2 bg-red-600/20 backdrop-blur-sm border border-red-600/30 rounded-full px-4 py-2 mb-6">
+            <TrendingUp className="w-4 h-4 text-red-500" />
+            <span className="text-sm font-semibold text-white">Trusted by 50K+ Athletes</span>
+          </div>
+
+          <h1 className="text-5xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight text-white">
+            {heroData.title.split(" ").map((word, i) => (
+              <span key={i} className={i === heroData.title.split(" ").length - 1 ? "text-red-600" : ""}>
+                {word}{" "}
+              </span>
+            ))}
+          </h1>
+
+          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl">
+            {heroData.subtitle}
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link
+              href="/shop"
+              className="group bg-red-600 hover:bg-red-700 px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              {heroData.cta}
+              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <button className="group border-2 border-white/20 hover:border-red-600 backdrop-blur-sm px-8 py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 text-white">
+              <Play className="w-5 h-5 text-white" />
+              Watch Video
+            </button>
+          </div>
+
+          {/* Stats */}
+          <div className="flex gap-8 mt-12">
+            {stats.map((stat) => (
+              <div key={stat.label}>
+                <div className="text-3xl font-black text-red-600">{stat.value}</div>
+                <div className="text-sm text-gray-400">{stat.label}</div>
               </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <ChevronRight className="w-6 h-6 rotate-90" />
+      </div>
     </section>
   );
 };

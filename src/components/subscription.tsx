@@ -1,34 +1,32 @@
-'use client';
+"use client";
+
+import { Award } from "lucide-react";
 
 const Subscription = () => {
   return (
-    <section className="bg-gradient-to-r from-red-600 to-red-700 py-16">
-      <div className="max-w-360 mx-auto xl:px-10 px-4">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16 text-center md:text-left">
-          
-          {/* Text Content */}
-          <div className="text-white max-w-xl">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">SUBSCRIBE AND SAVE</h2>
-            <p className="text-lg font-semibold mb-2">30% OFF YOUR ORDER</p>
-            <p className="text-sm sm:text-base opacity-90">
-              Get exclusive access to new products, special offers, and athlete tips delivered directly to your inbox.
-            </p>
-          </div>
+    <section className="py-20 bg-linear-to-br from-red-600 via-red-700 to-red-800 relative overflow-hidden">
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+      </div>
 
-          {/* Email Input & Button */}
-          <div className="w-full md:w-auto">
-            <div className="flex flex-col lg:flex-row items-center gap-4">
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                className="px-6 py-3 rounded-lg w-full sm:w-80 text-gray-900 focus:outline-none focus:ring-2 focus:ring-white transition-all border border-white bg-white"
-              />
-              <button className="bg-black hover:bg-gray-900 text-white px-8 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 whitespace-nowrap">
-                SIGN UP
-              </button>
-            </div>
-          </div>
+      <div className="max-w-4xl mx-auto px-4 lg:px-8 text-center relative z-10">
+        <Award className="w-16 h-16 mx-auto mb-6" />
+        <h2 className="text-4xl md:text-5xl font-black mb-4">JOIN THE WINNING TEAM</h2>
+        <p className="text-xl mb-2 font-bold">GET 30% OFF YOUR FIRST ORDER</p>
+        <p className="text-white/90 mb-8 max-w-2xl mx-auto">
+          Subscribe for exclusive deals, new product launches, and pro tips from champion athletes
+        </p>
 
+        <div className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            className="flex-1 px-6 py-4 rounded-xl bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-white/30 font-semibold"
+          />
+          <button className="bg-black hover:bg-gray-900 text-white px-8 py-4 rounded-xl font-bold transition-all transform hover:scale-105 whitespace-nowrap">
+            SUBSCRIBE NOW
+          </button>
         </div>
       </div>
     </section>

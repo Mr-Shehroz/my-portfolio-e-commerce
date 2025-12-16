@@ -1,78 +1,134 @@
-'use client';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
+"use client";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectCoverflow, Pagination, Navigation, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-coverflow";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Star } from "lucide-react";
+
+const testimonials = [
+  {
+    name: "David Wilson",
+    role: "Pro Basketball Player",
+    text: "Every piece of gear is crafted perfectly. Truly the best for serious athletes.",
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+  },
+  {
+    name: "Sarah Lee",
+    role: "Soccer Coach",
+    text: "The quality is unmatched. Every athlete I recommend this to sees instant improvement.",
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+  },
+  {
+    name: "John Doe",
+    role: "Fitness Enthusiast",
+    text: "This sports equipment is top-notch. I feel unbeatable every time I step on the field!",
+    avatar: "https://randomuser.me/api/portraits/men/65.jpg",
+  },
+  {
+    name: "Emily Chen",
+    role: "Tennis Pro",
+    text: "Lightweight, durable, and perfectly balanced. It`s like an extension of my body.",
+    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
+  },
+  {
+    name: "Marcus Green",
+    role: "Track & Field Athlete",
+    text: "From training to competition — this gear delivers peak performance every time.",
+    avatar: "https://randomuser.me/api/portraits/men/22.jpg",
+  },
+  {
+    name: "Aisha Patel",
+    role: "Cricket Captain",
+    text: "We`ve switched our entire team to this brand. The difference in performance is real.",
+    avatar: "https://randomuser.me/api/portraits/women/33.jpg",
+  },
+];
+
+const getInitials = (name: string) =>
+  name
+    .split(" ")
+    .map((str) => str[0])
+    .join("")
+    .slice(0, 2);
 
 const Testimonials = () => {
-  const testimonials = [
-    {
-      name: "John Doe",
-      position: "Professional Basketball Player",
-      text: "This sports equipment is top-notch. I feel unbeatable every time I step on the court!",
-      avatar: "https://randomuser.me/api/portraits/men/32.jpg"
-    },
-    {
-      name: "Sarah Lee",
-      position: "Soccer Coach",
-      text: "The quality is unmatched. Every athlete I recommend this to sees instant improvement.",
-      avatar: "https://randomuser.me/api/portraits/women/44.jpg"
-    },
-    {
-      name: "Michael Smith",
-      position: "Fitness Enthusiast",
-      text: "Absolutely love the gear! Durable, stylish, and performs exactly as promised.",
-      avatar: "https://randomuser.me/api/portraits/men/65.jpg"
-    },
-    {
-      name: "Emma Johnson",
-      position: "Marathon Runner",
-      text: "Lightweight, durable, and stylish. These products have improved my performance!",
-      avatar: "https://randomuser.me/api/portraits/women/68.jpg"
-    },
-    {
-      name: "David Wilson",
-      position: "Soccer Player",
-      text: "Every piece of gear is crafted perfectly. Truly the best for serious athletes.",
-      avatar: "https://randomuser.me/api/portraits/men/75.jpg"
-    }
-  ];
-
   return (
-    <section className="bg-gray-900 py-20">
-      <div className="max-w-360 mx-auto xl:px-10 px-4 text-center">
-        <h2 className="text-white text-4xl sm:text-5xl font-bold mb-4">WHAT CHAMPIONS SAY</h2>
-        <p className="text-gray-300 text-lg sm:text-xl max-w-3xl mx-auto mb-12">
-          Hear directly from athletes and sports enthusiasts who trust our gear for performance and style.
-        </p>
+    <section
+      id="testimonials"
+      className="py-20 bg-linear-to-br from-black via-gray-900 to-black relative overflow-hidden"
+    >
+      {/* Red radial glow — matches your other sections */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.1)_0%,transparent_20%),radial-gradient(circle_at_70%_70%,rgba(239,68,68,0.1)_0%,transparent_20%)]"></div>
+      </div>
+
+      <div className="max-w-360 mx-auto px-4 xl:px-10 relative z-10">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-4">
+            WHAT <span className="text-red-600">CHAMPIONS</span> SAY
+          </h2>
+          <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+            Trusted by athletes worldwide
+          </p>
+        </div>
 
         <Swiper
-          modules={[Autoplay, Navigation]}
-          autoplay={{ delay: 5000, disableOnInteraction: false }}
-          pagination={{ clickable: true, bulletClass: 'swiper-pagination-bullet !bg-white/50', bulletActiveClass: '!bg-red-600' }}
-          navigation
-          loop
-          spaceBetween={30}
-          breakpoints={{
-            0: { slidesPerView: 1 },
-            640: { slidesPerView: 1 },
-            768: { slidesPerView: 2 },
-            1024: { slidesPerView: 3 }
+          modules={[EffectCoverflow, Pagination, Navigation, Autoplay]}
+          effect="coverflow"
+          coverflowEffect={{
+            rotate: 6,
+            stretch: 20,
+            depth: 120,
+            modifier: 1.2,
+            slideShadows: true,
           }}
-          className="max-w-[7xl] mx-auto"
+          centeredSlides={true}
+          slidesPerView={1}
+          breakpoints={{
+            640: { slidesPerView: 1.4 },
+            1024: { slidesPerView: 2.2 },
+            1280: { slidesPerView: 2.6 },
+          }}
+          loop={true}
+          autoplay={{
+            delay: 4500,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }}
+          navigation={true}
+          className="pb-10"
         >
-          {testimonials.map((testimonial, idx) => (
-            <SwiperSlide key={idx}>
-              <div className="bg-gray-800 rounded-3xl p-8 flex flex-col items-center text-center shadow-2xl transition-transform hover:scale-101">
-                <img 
-                  src={testimonial.avatar} 
-                  alt={testimonial.name} 
-                  className="w-24 h-24 rounded-full mb-4 object-cover border-2 border-red-600"
-                />
-                <p className="text-gray-200 mb-4">{testimonial.text}</p>
-                <h3 className="text-white font-bold text-lg sm:text-xl">{testimonial.name}</h3>
-                <span className="text-red-600 text-sm sm:text-base">{testimonial.position}</span>
+          {testimonials.map((t, i) => (
+            <SwiperSlide key={i}>
+              <div className="px-4">
+                <div className="bg-gray-900 rounded-2xl p-8 border border-gray-800 hover:border-red-600/50 transition-all duration-300 shadow-xl group">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-14 h-14 rounded-full border-2 border-red-600 overflow-hidden shrink-0 bg-gray-800 flex items-center justify-center">
+                      {t.avatar ? (
+                        <img
+                          src={t.avatar}
+                          alt={t.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-red-500 font-bold">{getInitials(t.name)}</span>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white text-lg">{t.name}</h4>
+                      <p className="text-red-500 text-sm">{t.role}</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 leading-relaxed mb-4">"{t.text}"</p>
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={16} className="fill-red-600 text-red-600" />
+                    ))}
+                  </div>
+                </div>
               </div>
             </SwiperSlide>
           ))}

@@ -89,7 +89,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[89vh] bg-black flex items-center justify-center p-4 relative">
+    <div className="min-h-[110vh] bg-black flex items-center justify-center p-4 relative">
       {/* Background */}
       <div className="absolute inset-0 z-0">
         <img
