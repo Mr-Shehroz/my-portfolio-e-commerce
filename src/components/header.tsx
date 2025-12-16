@@ -27,17 +27,17 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex gap-6 text-sm font-semibold">
-            <Link href="/sports/cricket" className="hover:text-red-500 transition">
-              CRICKET
+            <Link href="/" className="hover:text-red-500 transition">
+              Home
             </Link>
-            <Link href="/sports/football" className="hover:text-red-500 transition">
-              FOOTBALL
+            <Link href="/about-us" className="hover:text-red-500 transition">
+              About Us
             </Link>
-            <Link href="/sports/basketball" className="hover:text-red-500 transition">
-              BASKETBALL
+            <Link href="/shop" className="hover:text-red-500 transition">
+              Shop
             </Link>
-            <Link href="/sports/badminton" className="hover:text-red-500 transition">
-              BADMINTON
+            <Link href="/faqs" className="hover:text-red-500 transition">
+              Faqs
             </Link>
           </div>
 

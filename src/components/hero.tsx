@@ -4,6 +4,7 @@ import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import Link from 'next/link';
 
 const Hero = () => {
   const slides = [
@@ -30,7 +31,7 @@ const Hero = () => {
   ];
 
   return (
-    <section className="relative h-[70vh] md:h-[700px] lg:min-h-[85vh] overflow-hidden">
+    <section className="relative h-[70vh] md:h-175 lg:min-h-[85vh] overflow-hidden">
       <Swiper
         modules={[Autoplay, Navigation, Pagination]}
         pagination={{ clickable: true }}
@@ -60,12 +61,9 @@ const Hero = () => {
                   {slide.subtitle}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                  <button className="bg-red-600 hover:bg-red-700 text-white 2xl:px-8 px-6 py-3 rounded font-semibold transition-all transform hover:scale-105">
+                  <Link href="/shop" className="bg-red-600 hover:bg-red-700 text-white 2xl:px-8 px-6 py-3 rounded font-semibold transition-all transform hover:scale-105">
                     SHOP NOW
-                  </button>
-                  <button className="bg-transparent border-2 border-white hover:bg-white hover:text-gray-900 text-white 2xl:px-8 px-6 py-3 rounded font-semibold transition-all">
-                    SHOP ALL SPORTS
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>

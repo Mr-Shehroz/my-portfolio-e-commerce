@@ -83,10 +83,11 @@ export const productType = defineType({
       type: "string",
       options: {
         list: [
-          { title: "Gadget", value: "gadget" },
-          { title: "Appliances", value: "appliances" },
-          { title: "Refrigerators", value: "refrigerators" },
-          { title: "Others", value: "others" },
+          { title: "Cricket", value: "cricket" },
+          { title: "Badminton", value: "badminton" },
+          { title: "Basketball", value: "basketball" },
+          { title: "Football", value: "football" },
+          { title: "Other", value: "other" },
         ],
       },
     }),

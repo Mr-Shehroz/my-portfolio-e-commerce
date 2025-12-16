@@ -1,5 +1,5 @@
 const Footer = () => {
-  const links = ["CRICKET", "FOOTBALL", "BASKETBALL", "BADMINTON" ];
+  const links = ["Home", "About Us", "Shop", "Faqs" ];
 
   return (
     <footer className="bg-black text-white py-8">
@@ -15,7 +15,7 @@ const Footer = () => {
           {links.map((link, idx) => (
             <a
               key={idx}
-              href={`#${link.toLowerCase().replace(/\s/g, '-')}`}
+              href={`${link.toLowerCase().replace(/\s/g, '-')}`}
               className="text-gray-400 hover:text-red-600 font-semibold transition-colors"
             >
               {link}
@@ -39,7 +39,7 @@ const Footer = () => {
 
       {/* Bottom copyright */}
       <div className="border-t border-gray-800 mt-6 pt-4 text-center text-gray-400 text-sm">
-        © 2024 Sports Store. All rights reserved.
+        © 2026 Sports Store. All rights reserved.
       </div>
     </footer>
   );
