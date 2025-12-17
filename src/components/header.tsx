@@ -56,7 +56,7 @@ const Header = () => {
       {/* Search Bar (Collapsible) */}
       {isSearchOpen && (
         <div className="bg-black/95 backdrop-blur-xl border-b border-gray-800 py-4 transition-all duration-300">
-          <div className="max-w-7xl mx-auto px-4 xl:px-8">
+          <div className="max-w-360 mx-auto px-4 xl:px-10">
             <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
                 <input
@@ -177,10 +177,10 @@ const Header = () => {
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-gray-800 bg-black/95 backdrop-blur-lg">
           <div className="px-6 py-8 space-y-5">
-            {["Home", "Shop", "Brands", "About"].map((item) => (
+            {["Home", "About Us", "Shop", "FAQs"].map((item) => (
               <Link
                 key={item}
-                href={`/${item === "Home" ? "" : item.toLowerCase()}`}
+                href={`/${item === "Home" ? "" : item.toLowerCase().replace(" ", "-")}`}
                 className="block text-lg font-semibold text-gray-300 hover:text-red-500 transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
