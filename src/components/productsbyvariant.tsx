@@ -1,8 +1,10 @@
 "use client";
 
-import { FC, useState } from "react";
-import { Star, ShoppingCart, ArrowRight } from "lucide-react";
+import { FC, useState, useEffect } from "react";
+import { Star, ShoppingCart, ArrowRight, Heart } from "lucide-react";
 import { urlFor } from "@/sanity/lib/image";
+import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 
 interface Brand {
   title: string;
@@ -27,20 +29,54 @@ interface Props {
 const variants = ["cricket", "badminton", "basketball", "football", "other"];
 
 const ProductsByVariant: FC<Props> = ({ products }) => {
+  const { isSignedIn } = useUser();
   const [activeTab, setActiveTab] = useState<string>(variants[0]);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
+  const [wishlist, setWishlist] = useState<Set<string>>(new Set());
+
+  // Load wishlist from localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("wishlist");
+      if (saved) {
+        try {
+          setWishlist(new Set(JSON.parse(saved)));
+        } catch (e) {
+          console.warn("Failed to parse wishlist from localStorage");
+        }
+      }
+    }
+  }, []);
+
+  const toggleWishlist = (productId: string) => {
+    if (!isSignedIn) return;
+
+    const newWishlist = new Set(wishlist);
+    if (newWishlist.has(productId)) {
+      newWishlist.delete(productId);
+    } else {
+      newWishlist.add(productId);
+    }
+    setWishlist(newWishlist);
+    localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
+
+    // ✅ Notify other components (like Header) that wishlist changed
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("wishlistUpdated"));
+    }
+  };
 
   const filteredProducts = products.filter((p) => p.variant === activeTab);
 
   return (
     <section className="py-20 bg-linear-to-br from-black via-gray-900 to-black relative overflow-hidden">
-      {/* Subtle background pattern */}
+      {/* Subtle red radial glow — matches all sections */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.1)_0%,transparent_20%),radial-gradient(circle_at_70%_70%,rgba(239,68,68,0.1)_0%,transparent_20%)]"></div>
       </div>
 
       <div className="max-w-360 mx-auto px-4 xl:px-10 relative z-10">
-        {/* Section Header with Modern Styling */}
+        {/* Section Header */}
         <div className="mb-12 text-center">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 tracking-tight">
             FEATURED <span className="text-red-500">PRODUCTS</span>
@@ -51,7 +87,7 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
           </p>
         </div>
 
-        {/* Enhanced Tabs */}
+        {/* Tabs */}
         <div className="flex flex-wrap gap-3 justify-center mb-12">
           {variants.map((variant) => (
             <button
@@ -78,7 +114,6 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
                 onMouseEnter={() => setHoveredProduct(product._id)}
                 onMouseLeave={() => setHoveredProduct(null)}
               >
-                {/* Product Image Container */}
                 <div className="relative h-64 overflow-hidden bg-gray-800">
                   {product.images[0] ? (
                     <img
@@ -102,7 +137,7 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
                   {/* Status Badge */}
                   {product.status && (
                     <div
-                      className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold uppercase ${
+                      className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold uppercase ${
                         product.status === "new"
                           ? "bg-green-600"
                           : product.status === "hot"
@@ -114,6 +149,32 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
                     </div>
                   )}
 
+                  {/* Wishlist Heart (only if signed in) */}
+                  {isSignedIn && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleWishlist(product._id);
+                      }}
+                      className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 flex items-center justify-center hover:bg-red-600 transition-colors"
+                      aria-label={
+                        wishlist.has(product._id)
+                          ? "Remove from wishlist"
+                          : "Add to wishlist"
+                      }
+                    >
+                      <Heart
+                        size={18}
+                        className={
+                          wishlist.has(product._id)
+                            ? "text-red-500 fill-current"
+                            : "text-white group-hover:text-red-500"
+                        }
+                      />
+                    </button>
+                  )}
+
                   {/* Hover Overlay */}
                   <div
                     className={`absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${
@@ -123,7 +184,7 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
                     }`}
                   >
                     <div className="absolute bottom-4 left-4 right-4">
-                      <button className="w-full bg-red-600 hover:bg-red-700 py-3 rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-2 group-hover:scale-105">
+                      <button className="w-full bg-red-600 hover:bg-red-700 py-3 rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-2">
                         <ShoppingCart size={16} />
                         Add to Cart
                       </button>
@@ -131,7 +192,6 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
                   </div>
                 </div>
 
-                {/* Product Info */}
                 <div className="p-6">
                   {product.brand?.title && (
                     <p className="text-gray-400 text-sm mb-1 font-medium">
@@ -154,7 +214,7 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
                     <p className="text-2xl font-black text-red-500">
                       ${product.price}
                     </p>
-                    {product.discount > 0 && (
+                    {product.discount && product.discount > 0 && (
                       <p className="text-gray-500 line-through text-sm">
                         ${(product.price + product.discount).toFixed(2)}
                       </p>
@@ -181,11 +241,14 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
         {/* View All Button */}
         {filteredProducts.length > 0 && (
           <div className="mt-12 text-center">
-            <button className="inline-flex items-center gap-2 px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full transition-all duration-300 transform hover:scale-105">
+            <Link
+              href={`/sports/${activeTab}`}
+              className="inline-flex items-center gap-2 px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full transition-all duration-300 transform hover:scale-105"
+            >
               View All {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}{" "}
               Products
               <ArrowRight size={18} />
-            </button>
+            </Link>
           </div>
         )}
       </div>

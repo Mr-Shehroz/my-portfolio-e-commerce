@@ -79,7 +79,7 @@ const Testimonials = () => {
           modules={[EffectCoverflow, Pagination, Navigation, Autoplay]}
           effect="coverflow"
           coverflowEffect={{
-            rotate: 6,
+            rotate: 7,
             stretch: 20,
             depth: 120,
             modifier: 1.2,

@@ -43,7 +43,7 @@ export const productsQuery = `
 export const allProductsQuery = `*[_type == "product"]{
   _id,
   name,
-  slug,
+  "slug": slug.current, 
   price,
   discount,
   images,
