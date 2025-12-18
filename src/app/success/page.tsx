@@ -1,19 +1,17 @@
 // app/success/page.tsx
 "use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Heart } from "lucide-react";
 import Link from "next/link";
 
-const SuccessPage = () => {
+// Separate component that uses useSearchParams
+const SuccessContent = () => {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
 
   useEffect(() => {
     if (!sessionId) return;
-
     // Optional: Save order to Sanity (you'd do this in a webhook)
     // For now, just show success
     setOrderNumber(`ORD-${Math.random().toString(36).substr(2, 6).toUpperCase()}`);
@@ -45,7 +43,7 @@ const SuccessPage = () => {
           </p>
         )}
         <p className="text-gray-400 mb-8">
-          You’ll receive a confirmation email shortly with your order details.
+          You'll receive a confirmation email shortly with your order details.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
@@ -63,6 +61,22 @@ const SuccessPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// Main page component with Suspense boundary
+const SuccessPage = () => {
+  return (
+    <Suspense fallback={
+      <div className="bg-black text-white min-h-screen flex items-center justify-center py-24">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
+          <p className="mt-4 text-gray-400">Loading...</p>
+        </div>
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
   );
 };
 
