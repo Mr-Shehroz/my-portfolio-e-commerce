@@ -39,7 +39,7 @@ const CartPage = () => {
   if (cartCount === 0) {
     return (
       <div className="bg-black text-white min-h-screen py-24">
-        <div className="max-w-7xl mx-auto px-4 text-center">
+        <div className="max-w-360 mx-auto px-4 xl:px-10 text-center">
           <div className="w-24 h-24 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-6">
             <Heart className="w-12 h-12 text-gray-600" />
           </div>
@@ -58,7 +58,7 @@ const CartPage = () => {
 
   return (
     <div className="bg-black text-white py-16">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-360 mx-auto px-4 xl:px-10">
         <h1 className="text-3xl md:text-4xl font-extrabold mb-12">Your Cart</h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">

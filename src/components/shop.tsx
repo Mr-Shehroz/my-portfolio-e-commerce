@@ -126,7 +126,7 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
 
       {/* Products Grid */}
       <section className="py-12 px-4 xl:px-10 pb-20">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-360 mx-auto">
           {filteredProducts.length === 0 ? (
             <div className="text-center py-24">
               <ShoppingCart className="w-16 h-16 text-gray-600 mx-auto mb-6" />
