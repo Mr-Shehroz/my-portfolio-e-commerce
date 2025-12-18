@@ -108,7 +108,8 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {filteredProducts.length ? (
             filteredProducts.slice(0, 8).map((product) => (
-              <div
+              <Link
+                href={`/product/${product.slug}`}
                 key={product._id}
                 className="group relative bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-red-500/50 transition-all duration-300 cursor-pointer transform hover:-translate-y-1 hover:shadow-xl hover:shadow-red-500/10"
                 onMouseEnter={() => setHoveredProduct(product._id)}
@@ -221,7 +222,7 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
                     )}
                   </div>
                 </div>
-              </div>
+              </Link>
             ))
           ) : (
             <div className="col-span-full text-center py-16">
