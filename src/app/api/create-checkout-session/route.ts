@@ -4,9 +4,7 @@ import Stripe from "stripe";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image"; // ✅ Import urlFor
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20", // ⚠️ Use a valid version (not future one)
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: NextRequest) {
   try {
