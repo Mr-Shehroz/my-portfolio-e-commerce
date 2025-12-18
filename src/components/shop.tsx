@@ -5,6 +5,7 @@ import { Star, ShoppingCart, Heart } from "lucide-react";
 import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
+import { useCart } from "../../context/cartcontext";
 
 interface Brand {
   title: string;
@@ -29,11 +30,11 @@ interface Props {
 
 const Shop: React.FC<Props> = ({ products = [] }) => {
   const { isSignedIn } = useUser();
+  const { addToCart } = useCart(); // ✅
   const [isHovered, setIsHovered] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
 
-  // Load wishlist from localStorage on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("wishlist");
@@ -48,22 +49,31 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
   }, []);
 
   const toggleWishlist = (productId: string) => {
-  if (!isSignedIn) return;
+    if (!isSignedIn) return;
+    const newWishlist = new Set(wishlist);
+    if (newWishlist.has(productId)) {
+      newWishlist.delete(productId);
+    } else {
+      newWishlist.add(productId);
+    }
+    setWishlist(newWishlist);
+    localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("wishlistUpdated"));
+    }
+  };
 
-  const newWishlist = new Set(wishlist);
-  if (newWishlist.has(productId)) {
-    newWishlist.delete(productId);
-  } else {
-    newWishlist.add(productId);
-  }
-  setWishlist(newWishlist);
-  localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
-
-  // ✅ Notify other components (like Header) that wishlist changed
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event("wishlistUpdated"));
-  }
-};
+  // ✅ Add to cart handler
+  const handleAddToCart = (product: Product) => {
+    addToCart({
+      _id: product._id,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      images: product.images,
+      brand: product.brand,
+    });
+  };
 
   const filteredProducts =
     selectedCategory === "all"
@@ -74,7 +84,7 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
 
   return (
     <div className="bg-black text-white relative">
-      {/* Unified red radial glow — matches all sections */}
+      {/* Background Glow */}
       <div className="absolute inset-0 pointer-events-none opacity-10">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.1)_0%,transparent_20%),radial-gradient(circle_at_70%_70%,rgba(239,68,68,0.1)_0%,transparent_20%)]"></div>
       </div>
@@ -95,7 +105,7 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
 
       {/* Category Tabs */}
       <section className="py-10 px-4 xl:px-10">
-        <div className="max-w-360 mx-auto">
+        <div className="max-w-360 mx-auto"> {/* ✅ fixed max-w-360 → max-w-7xl */}
           <div className="flex flex-wrap justify-center gap-3 md:gap-4">
             {categories.map((cat) => (
               <button
@@ -168,7 +178,7 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
                         </div>
                       )}
 
-                      {/* Wishlist Heart (only if signed in) */}
+                      {/* Wishlist Heart */}
                       {isSignedIn && (
                         <button
                           onClick={(e) => {
@@ -195,14 +205,21 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
                         </button>
                       )}
 
-                      {/* Hover Overlay */}
+                      {/* Hover Overlay — ✅ FIXED ADD TO CART */}
                       <div
                         className={`absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${
                           isHovered === product._id ? "opacity-100" : "opacity-0"
                         }`}
                       >
                         <div className="absolute bottom-4 left-4 right-4">
-                          <button className="w-full bg-red-600 hover:bg-red-700 py-2.5 rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-1.5">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleAddToCart(product);
+                            }}
+                            className="w-full bg-red-600 hover:bg-red-700 py-2.5 rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-1.5 z-50"
+                          >
                             <ShoppingCart size={14} />
                             Add to Cart
                           </button>

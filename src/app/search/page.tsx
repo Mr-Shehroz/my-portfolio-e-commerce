@@ -146,7 +146,7 @@ function SearchResultsContent() {
                 {["Cricket", "Football", "Basketball", "Badminton"].map((cat) => (
                   <Link
                     key={cat}
-                    href={`/category/${cat.toLowerCase()}`}
+                    href={`/sports/${cat.toLowerCase()}`}
                     className="px-4 py-2 bg-gray-800 hover:bg-red-600 rounded-full text-sm font-medium transition-colors"
                   >
                     {cat}

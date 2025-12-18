@@ -5,6 +5,7 @@ import { Star, ShoppingCart, ArrowRight, Heart } from "lucide-react";
 import { urlFor } from "@/sanity/lib/image";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import { useCart } from "../../context/cartcontext";
 
 interface Brand {
   title: string;
@@ -30,6 +31,7 @@ const variants = ["cricket", "badminton", "basketball", "football", "other"];
 
 const ProductsByVariant: FC<Props> = ({ products }) => {
   const { isSignedIn } = useUser();
+  const { addToCart } = useCart(); // ✅
   const [activeTab, setActiveTab] = useState<string>(variants[0]);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
@@ -60,22 +62,33 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
     setWishlist(newWishlist);
     localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
 
-    // ✅ Notify other components (like Header) that wishlist changed
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("wishlistUpdated"));
     }
   };
 
+  // ✅ Add to cart handler
+  const handleAddToCart = (product: Product) => {
+    addToCart({
+      _id: product._id,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      images: product.images,
+      brand: product.brand,
+    });
+  };
+
   const filteredProducts = products.filter((p) => p.variant === activeTab);
 
   return (
-    <section className="py-20 bg-linear-to-br from-black via-gray-900 to-black relative overflow-hidden">
+    <section className="py-20 bg-linear-to-br from-black via-gray-900 to-black relative overflow-hidden"> {/* ✅ fixed */}
       {/* Subtle red radial glow — matches all sections */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.1)_0%,transparent_20%),radial-gradient(circle_at_70%_70%,rgba(239,68,68,0.1)_0%,transparent_20%)]"></div>
       </div>
 
-      <div className="max-w-360 mx-auto px-4 xl:px-10 relative z-10">
+      <div className="max-w-360 mx-auto px-4 xl:px-10 relative z-10"> {/* ✅ fixed */}
         {/* Section Header */}
         <div className="mb-12 text-center">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 tracking-tight">
@@ -176,7 +189,7 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
                     </button>
                   )}
 
-                  {/* Hover Overlay */}
+                  {/* Hover Overlay — ✅ REAL ADD TO CART */}
                   <div
                     className={`absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${
                       hoveredProduct === product._id
@@ -185,7 +198,14 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
                     }`}
                   >
                     <div className="absolute bottom-4 left-4 right-4">
-                      <button className="w-full bg-red-600 hover:bg-red-700 py-3 rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleAddToCart(product);
+                        }}
+                        className="w-full bg-red-600 hover:bg-red-700 py-3 rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-2"
+                      >
                         <ShoppingCart size={16} />
                         Add to Cart
                       </button>

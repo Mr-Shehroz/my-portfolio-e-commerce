@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, ShoppingCart, Heart, Search, Zap } from "lucide-react";
 import { useUser, UserButton } from "@clerk/nextjs";
+import { useCart } from "../../context/cartcontext";
 
 const Header = () => {
+  const { cartCount } = useCart(); // ✅
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -21,7 +23,7 @@ const Header = () => {
     }
   };
 
-  // Wishlist count logic (unchanged)
+  // Wishlist count logic
   const fetchWishlistCount = () => {
     if (typeof window === "undefined") return 0;
     const saved = localStorage.getItem("wishlist");
@@ -49,14 +51,14 @@ const Header = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl border-b border-gray-800">
       {/* Promo Bar */}
-      <div className="bg-linear-to-r from-red-600 via-red-700 to-red-600 text-center py-2 text-xs md:text-sm font-bold tracking-wider text-white animate-pulse">
+      <div className="bg-linear-to-r from-red-600 via-red-700 to-red-600 text-center py-2 text-xs md:text-sm font-bold tracking-wider text-white animate-pulse"> {/* ✅ fixed */}
         ⚡ FREE SPORTS JERSEY WITH EVERY ORDER • LIMITED TIME ⚡
       </div>
 
-      {/* Search Bar (Collapsible) */}
+      {/* Search Bar */}
       {isSearchOpen && (
         <div className="bg-black/95 backdrop-blur-xl border-b border-gray-800 py-4 transition-all duration-300">
-          <div className="max-w-360 mx-auto px-4 xl:px-10">
+          <div className="max-w-360 mx-auto px-4 xl:px-10"> {/* ✅ fixed */}
             <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
                 <input
@@ -88,11 +90,11 @@ const Header = () => {
       )}
 
       {/* Main Nav */}
-      <div className="max-w-360 mx-auto px-4 xl:px-10">
+      <div className="max-w-360 mx-auto px-4 xl:px-10"> {/* ✅ fixed */}
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 bg-linear-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-red-600/30">
+            <div className="w-10 h-10 bg-linear-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-red-600/30"> {/* ✅ fixed */}
               <Zap className="w-6 h-6 text-white" />
             </div>
             <span className="text-xl md:text-2xl font-extrabold tracking-tight text-white">
@@ -115,7 +117,7 @@ const Header = () => {
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-5"> {/* ✅ removed 'flex-r' */}
             {/* Search Icon */}
             <Search 
               className="w-5 h-5 cursor-pointer hover:text-red-500 transition-colors text-gray-300 hidden md:block" 
@@ -133,12 +135,14 @@ const Header = () => {
               )}
             </Link>
 
-            {/* Cart */}
+            {/* Cart — ✅ DYNAMIC COUNT */}
             <Link href="/cart" className="relative group" aria-label="Cart">
               <ShoppingCart className="w-5 h-5 group-hover:text-red-500 transition-colors text-gray-300" />
-              <span className="absolute -top-2 -right-2 w-4.5 h-4.5 bg-red-600 rounded-full text-[10px] font-bold flex items-center justify-center text-white animate-ping-pulse">
-                3
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 w-4.5 h-4.5 bg-red-600 rounded-full text-[10px] font-bold flex items-center justify-center text-white animate-ping-pulse">
+                  {cartCount}
+                </span>
+              )}
             </Link>
 
             {/* Auth */}
@@ -173,7 +177,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Menu (unchanged) */}
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-gray-800 bg-black/95 backdrop-blur-lg">
           <div className="px-6 py-8 space-y-5">

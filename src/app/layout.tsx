@@ -4,6 +4,7 @@ import { Montserrat, Poppins } from "next/font/google";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { ClerkProvider } from "@clerk/nextjs";
+import { CartProvider } from "../../context/cartcontext";
 
 const poppins = Poppins({
   weight: ["400", "700"],
@@ -33,11 +34,13 @@ export default function RootLayout({
         <body
           className={`antialiased ${poppins.variable} ${montserrat.variable}`}
         >
-          <main>
-            <Header />
-            {children}
-            <Footer />
-          </main>
+          <CartProvider>
+            <main>
+              <Header />
+              {children}
+              <Footer />
+            </main>
+          </CartProvider>
         </body>
       </html>
     </ClerkProvider>
