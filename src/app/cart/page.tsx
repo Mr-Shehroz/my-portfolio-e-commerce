@@ -2,20 +2,31 @@
 "use client";
 
 import { useState } from "react";
-import { Heart, Trash2, Plus, Minus } from "lucide-react";
+import { Heart, Trash2, Plus, Minus, AlertCircle } from "lucide-react";
 import { useCart } from "../../../context/cartcontext";
+import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const CartPage = () => {
   const { cart, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
+  const { isSignedIn, isLoaded } = useUser();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleCheckout = async () => {
     if (cart.length === 0) return;
     
+    // Check if user is signed in
+    if (!isSignedIn) {
+      router.push("/sign-in?redirect_url=/cart");
+      return;
+    }
+
     setIsLoading(true);
+    setError(null);
+
     try {
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
@@ -23,18 +34,34 @@ const CartPage = () => {
         body: JSON.stringify({ products: cart }),
       });
 
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to create checkout session");
+      }
+
       const data = await response.json();
       
       if (data.url) {
         window.location.href = data.url; // Redirect to Stripe Checkout
+      } else {
+        throw new Error("No checkout URL returned");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Checkout error:", err);
-      alert("Failed to start checkout. Please try again.");
+      setError(err.message || "Failed to start checkout. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Show loading state while checking authentication
+  if (!isLoaded) {
+    return (
+      <div className="bg-black text-white min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   if (cartCount === 0) {
     return (
@@ -44,7 +71,7 @@ const CartPage = () => {
             <Heart className="w-12 h-12 text-gray-600" />
           </div>
           <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
-          <p className="text-gray-400 mb-8">Looks like you haven`t added anything yet.</p>
+          <p className="text-gray-400 mb-8">Looks like you haven't added anything yet.</p>
           <Link
             href="/shop"
             className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg font-bold inline-block"
@@ -60,6 +87,26 @@ const CartPage = () => {
     <div className="bg-black text-white py-16">
       <div className="max-w-360 mx-auto px-4 xl:px-10">
         <h1 className="text-3xl md:text-4xl font-extrabold mb-12">Your Cart</h1>
+        
+        {/* Show error if checkout failed */}
+        {error && (
+          <div className="mb-6 bg-red-900/20 border border-red-500 rounded-lg p-4 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-red-500 font-medium">Checkout Error</p>
+              <p className="text-gray-400 text-sm mt-1">{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Sign in reminder if not signed in */}
+        {!isSignedIn && (
+          <div className="mb-6 bg-yellow-900/20 border border-yellow-500 rounded-lg p-4">
+            <p className="text-yellow-500 font-medium">
+              Please sign in to proceed with checkout
+            </p>
+          </div>
+        )}
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Cart Items */}
@@ -90,7 +137,7 @@ const CartPage = () => {
                         {item.brand && (
                           <p className="text-gray-400 text-sm">{item.brand.title}</p>
                         )}
-                        <p className="text-red-500 font-bold mt-2">${item.price}</p>
+                        <p className="text-red-500 font-bold mt-2">${item.price.toFixed(2)}</p>
                       </div>
                       <button
                         onClick={() => removeFromCart(item._id)}
@@ -103,14 +150,14 @@ const CartPage = () => {
                     <div className="flex items-center gap-3 mt-4">
                       <button
                         onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                        className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center"
+                        className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center hover:bg-gray-800"
                       >
                         <Minus size={14} />
                       </button>
                       <span className="w-10 text-center">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                        className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center"
+                        className="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center hover:bg-gray-800"
                       >
                         <Plus size={14} />
                       </button>
@@ -148,7 +195,7 @@ const CartPage = () => {
                   : "bg-red-600 hover:bg-red-700"
               }`}
             >
-              {isLoading ? "Processing..." : "Proceed to Checkout"}
+              {isLoading ? "Processing..." : isSignedIn ? "Proceed to Checkout" : "Sign In to Checkout"}
             </button>
             
             <Link
