@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "studio:dev": "sanity start dashboard",
+    "studio:build": "sanity build dashboard",
+    "studio:serve": "sanity serve dashboard"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.36.2",
