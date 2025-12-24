@@ -7,14 +7,13 @@ import { useUser, UserButton } from "@clerk/nextjs";
 import { useCart } from "../../context/cartcontext";
 
 const Header = () => {
-  const { cartCount } = useCart(); // ✅
+  const { cartCount } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { isSignedIn } = useUser();
 
-  // Handle search submission
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -23,7 +22,6 @@ const Header = () => {
     }
   };
 
-  // Wishlist count logic
   const fetchWishlistCount = () => {
     if (typeof window === "undefined") return 0;
     const saved = localStorage.getItem("wishlist");
@@ -50,51 +48,17 @@ const Header = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl border-b border-gray-800">
-      {/* Promo Bar */}
-      <div className="bg-linear-to-r from-red-600 via-red-700 to-red-600 text-center py-2 text-xs md:text-sm font-bold tracking-wider text-white animate-pulse"> {/* ✅ fixed */}
+      {/* ✅ Promo Bar remains on top */}
+      <div className="bg-linear-to-r from-red-600 via-red-700 to-red-600 text-center py-2 text-xs md:text-sm font-bold tracking-wider text-white animate-pulse">
         ⚡ FREE SPORTS JERSEY WITH EVERY ORDER • LIMITED TIME ⚡
       </div>
 
-      {/* Search Bar */}
-      {isSearchOpen && (
-        <div className="bg-black/95 backdrop-blur-xl border-b border-gray-800 py-4 transition-all duration-300">
-          <div className="max-w-360 mx-auto px-4 xl:px-10"> {/* ✅ fixed */}
-            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search products, brands, or categories..."
-                  className="w-full bg-gray-900 text-white px-6 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-600 pr-12"
-                  autoFocus
-                />
-                <button
-                  type="button"
-                  onClick={() => setIsSearchOpen(false)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
-                  aria-label="Close search"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-              <button
-                type="submit"
-                className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-full font-bold transition-colors whitespace-nowrap"
-              >
-                Search
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Main Nav */}
-      <div className="max-w-360 mx-auto px-4 xl:px-10"> {/* ✅ fixed */}
+      {/* ✅ Main Nav — now ABOVE search */}
+      <div className="max-w-360 mx-auto px-4 xl:px-10">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 bg-linear-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-red-600/30"> {/* ✅ fixed */}
+            <div className="w-10 h-10 bg-linear-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-red-600/30">
               <Zap className="w-6 h-6 text-white" />
             </div>
             <span className="text-xl md:text-2xl font-extrabold tracking-tight text-white">
@@ -117,7 +81,7 @@ const Header = () => {
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-5"> {/* ✅ removed 'flex-r' */}
+          <div className="flex items-center gap-5">
             {/* Search Icon */}
             <Search 
               className="w-5 h-5 cursor-pointer hover:text-red-500 transition-colors text-gray-300 hidden md:block" 
@@ -135,10 +99,10 @@ const Header = () => {
               )}
             </Link>
 
-            {/* Cart — ✅ DYNAMIC COUNT */}
+            {/* Cart */}
             <Link href="/cart" className="relative group" aria-label="Cart">
               <ShoppingCart className="w-5 h-5 group-hover:text-red-500 transition-colors text-gray-300" />
-              {cartCount > 0 && (
+              {isSignedIn && cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 w-4.5 h-4.5 bg-red-600 rounded-full text-[10px] font-bold flex items-center justify-center text-white animate-ping-pulse">
                   {cartCount}
                 </span>
@@ -176,6 +140,40 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      {/* ✅ SEARCH BAR NOW RENDERED BELOW MAIN NAV */}
+      {isSearchOpen && (
+        <div className="bg-black/95 backdrop-blur-xl border-b border-gray-800 py-4 transition-all duration-300">
+          <div className="max-w-360 mx-auto px-4 xl:px-10">
+            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products, brands, or categories..."
+                  className="w-full bg-gray-900 text-white px-6 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-600 pr-12"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsSearchOpen(false)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                  aria-label="Close search"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <button
+                type="submit"
+                className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-full font-bold transition-colors whitespace-nowrap"
+              >
+                Search
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
