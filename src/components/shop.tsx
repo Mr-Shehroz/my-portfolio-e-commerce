@@ -105,7 +105,7 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
 
       {/* Category Tabs */}
       <section className="py-10 px-4 xl:px-10">
-        <div className="max-w-360 mx-auto"> {/* ✅ fixed max-w-360 → max-w-7xl */}
+        <div className="max-w-360 px-4 xl:px-10 mx-auto"> {/* ✅ fixed max-w-360 → max-w-7xl */}
           <div className="flex flex-wrap justify-center gap-3 md:gap-4">
             {categories.map((cat) => (
               <button
@@ -126,7 +126,7 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
 
       {/* Products Grid */}
       <section className="py-12 px-4 xl:px-10 pb-20">
-        <div className="max-w-360 mx-auto">
+        <div className="max-w-360 mx-auto px-4 xl:px-10">
           {filteredProducts.length === 0 ? (
             <div className="text-center py-24">
               <ShoppingCart className="w-16 h-16 text-gray-600 mx-auto mb-6" />
@@ -187,7 +187,7 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
                             toggleWishlist(product._id);
                           }}
                           className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 
-                                     flex items-center justify-center hover:bg-red-600 transition-colors"
+                                     flex items-center justify-center hover:border-red-500 hover:border transition-colors"
                           aria-label={
                             wishlist.has(product._id)
                               ? "Remove from wishlist"

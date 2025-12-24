@@ -152,7 +152,7 @@ const NewArrivals: React.FC<Props> = ({ products }) => {
                           e.stopPropagation();
                           toggleWishlist(product._id);
                         }}
-                        className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 flex items-center justify-center hover:bg-red-600 transition-colors"
+                        className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 flex items-center justify-center hover:border-red-500 hover:border transition-colors"
                         aria-label={
                           wishlist.has(product._id)
                             ? "Remove from wishlist"

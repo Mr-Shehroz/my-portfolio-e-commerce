@@ -82,7 +82,7 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
   const filteredProducts = products.filter((p) => p.variant === activeTab);
 
   return (
-    <section className="py-20 bg-linear-to-br from-black via-gray-900 to-black relative overflow-hidden"> {/* ✅ fixed */}
+    <section className="py-20 bg-[url(/black.png)] bg-cover bg-center relative overflow-hidden"> {/* ✅ fixed */}
       {/* Subtle red radial glow — matches all sections */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.1)_0%,transparent_20%),radial-gradient(circle_at_70%_70%,rgba(239,68,68,0.1)_0%,transparent_20%)]"></div>
@@ -171,7 +171,7 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
                         e.stopPropagation();
                         toggleWishlist(product._id);
                       }}
-                      className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 flex items-center justify-center hover:bg-red-600 transition-colors"
+                      className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 flex items-center justify-center hover:border-red-500 hover:border transition-colors"
                       aria-label={
                         wishlist.has(product._id)
                           ? "Remove from wishlist"

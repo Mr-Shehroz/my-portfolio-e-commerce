@@ -8,14 +8,8 @@ const Hero = () => {
     title: "UNLEASH YOUR POTENTIAL",
     subtitle: "Championship-grade equipment for athletes who refuse to settle",
     cta: "Explore Collection",
-    image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1920&h=1080&fit=crop",
+    image: "/run.jpg",
   };
-
-  const stats = [
-    { label: "Products", value: "500+" },
-    { label: "Brands", value: "50+" },
-    { label: "Athletes", value: "50K+" },
-  ];
 
   return (
     <section className="relative h-screen mt-20 overflow-hidden">
@@ -25,7 +19,7 @@ const Hero = () => {
         <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent"></div>
       </div>
 
-      <div className="relative z-10 max-w-360 mx-auto px-4 xl:px-10 h-full flex items-center">
+      <div className="relative z-10 max-w-360 mx-auto px-4 xl:px-10 min-h-[93.5vh] flex items-center">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 bg-red-600/20 backdrop-blur-sm border border-red-600/30 rounded-full px-4 py-2 mb-6">
             <TrendingUp className="w-4 h-4 text-red-500" />
@@ -52,20 +46,6 @@ const Hero = () => {
               {heroData.cta}
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <button className="group border-2 border-white/20 hover:border-red-600 backdrop-blur-sm px-8 py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 text-white">
-              <Play className="w-5 h-5 text-white" />
-              Watch Video
-            </button>
-          </div>
-
-          {/* Stats */}
-          <div className="flex gap-8 mt-12">
-            {stats.map((stat) => (
-              <div key={stat.label}>
-                <div className="text-3xl font-black text-red-600">{stat.value}</div>
-                <div className="text-sm text-gray-400">{stat.label}</div>
-              </div>
-            ))}
           </div>
         </div>
       </div>

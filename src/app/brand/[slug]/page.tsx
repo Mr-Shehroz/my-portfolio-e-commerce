@@ -150,7 +150,7 @@ const BrandPage = () => {
 
       {/* Products Section */}
       <section className="py-16 px-4 xl:px-10 relative z-10">
-        <div className="max-w-360 mx-auto">
+        <div className="max-w-360 mx-auto px-4 xl:px-10">
           {products.length === 0 ? (
             <div className="text-center py-24">
               <div className="w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-6">

@@ -37,7 +37,7 @@ const AboutUs = () => {
 
       {/* Story Section */}
       <section className="py-24 px-4 xl:px-10 relative z-10">
-        <div className="max-w-360 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="max-w-360 px-4 xl:px-10 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-8">
               Our <span className="text-red-600">Story</span>
@@ -80,7 +80,7 @@ const AboutUs = () => {
 
       {/* Values Section */}
       <section className="py-24 px-4 relative z-10">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto px-4 xl:px-10">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-center mb-16">
             Our <span className="text-red-600">Values</span>
           </h2>

@@ -164,7 +164,7 @@ const SingleProductPage = () => {
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.1)_0%,transparent_20%),radial-gradient(circle_at_70%_70%,rgba(239,68,68,0.1)_0%,transparent_20%)]"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 xl:px-10 py-12 relative z-10"> {/* ✅ fixed max-w-360 → max-w-7xl */}
+      <div className="max-w-360 mx-auto px-4 xl:px-10 py-12 relative z-10"> {/* ✅ fixed max-w-360 → max-w-7xl */}
         {/* Breadcrumb */}
         <div className="mb-8">
           <Link href="/shop" className="text-gray-400 hover:text-red-500 flex items-center gap-1">

@@ -79,7 +79,7 @@ function SearchResultsContent() {
 
       {/* Results */}
       <section className="py-12 px-4 xl:px-10 relative z-10">
-        <div className="max-w-360 mx-auto">
+        <div className="max-w-360 mx-auto px-4 xl:px-10">
           {loading ? null : results.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {results.map((product) => (
