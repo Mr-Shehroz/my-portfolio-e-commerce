@@ -63,6 +63,7 @@ export default function RootLayout({
                 }}
               />
             </main>
+            <Footer />
           </CartProvider>
         </body>
       </html>
