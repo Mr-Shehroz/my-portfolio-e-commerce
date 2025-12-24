@@ -6,6 +6,7 @@ import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { useCart } from "../../context/cartcontext";
+import toast from 'react-hot-toast'; // ✅ Added
 
 interface Brand {
   title: string;
@@ -29,11 +30,10 @@ interface Props {
 
 const NewArrivals: React.FC<Props> = ({ products }) => {
   const { isSignedIn } = useUser();
-  const { addToCart } = useCart(); // ✅
+  const { addToCart } = useCart();
   const [isHovered, setIsHovered] = useState<string | null>(null);
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
 
-  // Load wishlist from localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("wishlist");
@@ -47,15 +47,23 @@ const NewArrivals: React.FC<Props> = ({ products }) => {
     }
   }, []);
 
-  const toggleWishlist = (productId: string) => {
-    if (!isSignedIn) return;
+  const toggleWishlist = (productId: string, productName: string) => {
+    if (!isSignedIn) {
+      toast.error("Please sign in to use wishlist.");
+      return;
+    }
 
     const newWishlist = new Set(wishlist);
-    if (newWishlist.has(productId)) {
-      newWishlist.delete(productId);
-    } else {
+    const isAdding = !newWishlist.has(productId);
+
+    if (isAdding) {
       newWishlist.add(productId);
+      toast.success(`${productName} added to wishlist!`);
+    } else {
+      newWishlist.delete(productId);
+      toast.error("Removed from wishlist");
     }
+
     setWishlist(newWishlist);
     localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
 
@@ -64,19 +72,23 @@ const NewArrivals: React.FC<Props> = ({ products }) => {
     }
   };
 
-  // ✅ Add to cart handler
-  const handleAddToCart = (product: Product) => {
-    addToCart({
-      _id: product._id,
-      name: product.name,
-      slug: product.slug,
-      price: product.price,
-      images: product.images,
-      brand: product.brand,
-    });
-  };
+const handleAddToCart = (product: Product) => {
+  if (!isSignedIn) {
+    toast.error("Please sign in to add items to your cart.");
+    return;
+  }
 
-  // Filter and sort new arrivals
+  addToCart({
+    _id: product._id,
+    name: product.name,
+    slug: product.slug,
+    price: product.price,
+    images: product.images,
+    brand: product.brand,
+  });
+  toast.success(`${product.name} added to cart!`);
+};
+
   const newProducts = products.filter((p) => p.status === "new");
   const sortedProducts = [...newProducts].sort(
     (a, b) => new Date(b._createdAt).getTime() - new Date(a._createdAt).getTime()
@@ -84,14 +96,12 @@ const NewArrivals: React.FC<Props> = ({ products }) => {
   const newArrivals = sortedProducts.slice(0, 8);
 
   return (
-    <section className="py-20 bg-linear-to-br from-black via-gray-900 to-black relative overflow-hidden"> {/* ✅ fixed */}
-      {/* Subtle red radial glow — matches all sections */}
+    <section className="py-20 bg-linear-to-br from-black via-gray-900 to-black relative overflow-hidden">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.1)_0%,transparent_20%),radial-gradient(circle_at_70%_70%,rgba(239,68,68,0.1)_0%,transparent_20%)]"></div>
       </div>
 
-      <div className="max-w-360 mx-auto px-4 xl:px-10 relative z-10"> {/* ✅ fixed */}
-        {/* Header */}
+      <div className="max-w-360 mx-auto px-4 xl:px-10 relative z-10">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12">
           <div>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-2 tracking-tight">
@@ -108,7 +118,6 @@ const NewArrivals: React.FC<Props> = ({ products }) => {
           </Link>
         </div>
 
-        {/* Products Grid */}
         {newArrivals.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {newArrivals.map((product) => (
@@ -137,40 +146,36 @@ const NewArrivals: React.FC<Props> = ({ products }) => {
                       </div>
                     )}
 
-                    {/* Status Badge */}
                     {product.status && (
                       <div className="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase animate-pulse">
                         {product.status}
                       </div>
                     )}
 
-                    {/* Wishlist Heart (only if signed in) */}
-                    {isSignedIn && (
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          toggleWishlist(product._id);
-                        }}
-                        className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 flex items-center justify-center hover:border-red-500 hover:border transition-colors"
-                        aria-label={
-                          wishlist.has(product._id)
-                            ? "Remove from wishlist"
-                            : "Add to wishlist"
+                    {/* Wishlist Heart — works for guests too */}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleWishlist(product._id, product.name);
+                      }}
+                      className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 flex items-center justify-center hover:border-red-500 hover:border transition-colors"
+                      aria-label={
+                        wishlist.has(product._id) && isSignedIn
+                          ? "Remove from wishlist"
+                          : "Add to wishlist"
+                      }
+                    >
+                      <Heart
+                        size={18}
+                        className={
+                          wishlist.has(product._id) && isSignedIn
+                            ? "text-red-500 fill-current"
+                            : "text-white group-hover:text-red-500"
                         }
-                      >
-                        <Heart
-                          size={18}
-                          className={
-                            wishlist.has(product._id)
-                              ? "text-red-500 fill-current"
-                              : "text-white group-hover:text-red-500"
-                          }
-                        />
-                      </button>
-                    )}
+                      />
+                    </button>
 
-                    {/* Hover Overlay — ✅ REAL ADD TO CART */}
                     <div
                       className={`absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${
                         isHovered === product._id ? "opacity-100" : "opacity-0"

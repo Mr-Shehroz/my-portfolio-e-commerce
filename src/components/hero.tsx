@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ChevronRight, Play, TrendingUp } from "lucide-react";
+import Image from "next/image";
 
 const Hero = () => {
   const heroData = {
@@ -12,7 +13,8 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative h-screen mt-20 overflow-hidden">
+    <section className="relative h-screen mt-20 overflow-visible">
+      <Image src="/blur.png" height={100} width={100} alt="blur" className="w-full absolute h-20 bottom-0 z-50" />
       <div className="absolute inset-0">
         <img src={heroData.image} alt="Hero" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-linear-to-r from-black via-black/70 to-transparent"></div>

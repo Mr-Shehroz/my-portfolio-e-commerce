@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { CartProvider } from "../../context/cartcontext";
+import { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
   weight: ["400", "700"],
@@ -38,7 +39,29 @@ export default function RootLayout({
             <main>
               <Header />
               {children}
-              <Footer />
+              <Toaster
+                position="bottom-right"
+                toastOptions={{
+                  success: {
+                    style: {
+                      background: "#065f46",
+                      color: "#ecfdf5",
+                      border: "1px solid #0d9488",
+                      borderRadius: "8px",
+                      padding: "12px 16px",
+                    },
+                  },
+                  error: {
+                    style: {
+                      background: "#991b1b",
+                      color: "#fee2e2",
+                      border: "1px solid #dc2626",
+                      borderRadius: "8px",
+                      padding: "12px 16px",
+                    },
+                  },
+                }}
+              />
             </main>
           </CartProvider>
         </body>

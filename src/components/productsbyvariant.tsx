@@ -6,6 +6,7 @@ import { urlFor } from "@/sanity/lib/image";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { useCart } from "../../context/cartcontext";
+import toast from 'react-hot-toast'; // ✅ Added toast import
 
 interface Brand {
   title: string;
@@ -31,7 +32,7 @@ const variants = ["cricket", "badminton", "basketball", "football", "other"];
 
 const ProductsByVariant: FC<Props> = ({ products }) => {
   const { isSignedIn } = useUser();
-  const { addToCart } = useCart(); // ✅
+  const { addToCart } = useCart();
   const [activeTab, setActiveTab] = useState<string>(variants[0]);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
@@ -50,15 +51,29 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
     }
   }, []);
 
-  const toggleWishlist = (productId: string) => {
-    if (!isSignedIn) return;
+  const toggleWishlist = (productId: string, productName: string) => {
+    if (!isSignedIn) {
+      toast.error("Please sign in to use wishlist.");
+      return;
+    }
 
     const newWishlist = new Set(wishlist);
-    if (newWishlist.has(productId)) {
-      newWishlist.delete(productId);
-    } else {
+    const isAdding = !newWishlist.has(productId);
+
+    if (isAdding) {
       newWishlist.add(productId);
+      toast.success(`${productName} added to wishlist!`, {
+        duration: 2000,
+        icon: "❤️",
+      });
+    } else {
+      newWishlist.delete(productId);
+      toast("Removed from wishlist", {
+        icon: "💔",
+        duration: 2000,
+      });
     }
+
     setWishlist(newWishlist);
     localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
 
@@ -67,28 +82,36 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
     }
   };
 
-  // ✅ Add to cart handler
-  const handleAddToCart = (product: Product) => {
-    addToCart({
-      _id: product._id,
-      name: product.name,
-      slug: product.slug,
-      price: product.price,
-      images: product.images,
-      brand: product.brand,
-    });
-  };
+const handleAddToCart = (product: Product) => {
+  if (!isSignedIn) {
+    toast.error("Please sign in to add items to your cart.");
+    return;
+  }
+
+  addToCart({
+    _id: product._id,
+    name: product.name,
+    slug: product.slug,
+    price: product.price,
+    images: product.images,
+    brand: product.brand,
+  });
+  toast.success(`${product.name} added to cart!`, {
+    duration: 2000,
+    icon: "🛒",
+  });
+};
 
   const filteredProducts = products.filter((p) => p.variant === activeTab);
 
   return (
-    <section className="py-20 bg-[url(/black.png)] bg-cover bg-center relative overflow-hidden"> {/* ✅ fixed */}
-      {/* Subtle red radial glow — matches all sections */}
+    <section className="py-20 bg-linear-to-br from-black via-gray-900 to-black relative overflow-hidden">
+      {/* Subtle red radial glow */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.1)_0%,transparent_20%),radial-gradient(circle_at_70%_70%,rgba(239,68,68,0.1)_0%,transparent_20%)]"></div>
       </div>
 
-      <div className="max-w-360 mx-auto px-4 xl:px-10 relative z-10"> {/* ✅ fixed */}
+      <div className="max-w-360 mx-auto px-4 xl:px-10 relative z-10">
         {/* Section Header */}
         <div className="mb-12 text-center">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 tracking-tight">
@@ -155,21 +178,21 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
                         product.status === "new"
                           ? "bg-green-600"
                           : product.status === "hot"
-                            ? "bg-orange-600"
-                            : "bg-red-600"
+                          ? "bg-orange-600"
+                          : "bg-red-600"
                       } text-white animate-pulse`}
                     >
                       {product.status}
                     </div>
                   )}
 
-                  {/* Wishlist Heart (only if signed in) */}
-                  {isSignedIn && (
+                  {/* Wishlist Heart */}
+                  {isSignedIn ? (
                     <button
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        toggleWishlist(product._id);
+                        toggleWishlist(product._id, product.name);
                       }}
                       className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 flex items-center justify-center hover:border-red-500 hover:border transition-colors"
                       aria-label={
@@ -187,9 +210,22 @@ const ProductsByVariant: FC<Props> = ({ products }) => {
                         }
                       />
                     </button>
+                  ) : (
+                    // Guest users: still show heart but show toast on click
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toast.error("Please sign in to use wishlist.");
+                      }}
+                      className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 flex items-center justify-center"
+                      aria-label="Sign in to add to wishlist"
+                    >
+                      <Heart size={18} className="text-white group-hover:text-red-500" />
+                    </button>
                   )}
 
-                  {/* Hover Overlay — ✅ REAL ADD TO CART */}
+                  {/* Hover Overlay — Add to Cart */}
                   <div
                     className={`absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${
                       hoveredProduct === product._id

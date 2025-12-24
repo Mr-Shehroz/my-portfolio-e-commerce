@@ -13,7 +13,7 @@ export default async function Home() {
   const products = await client.fetch(productsQuery);
 
   return (
-    <section>
+    <section className="relative">
       <Hero />
       <ProductsByVariant products={products} />
       <NewArrivals products={products} />

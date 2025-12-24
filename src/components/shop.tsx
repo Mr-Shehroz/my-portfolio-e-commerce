@@ -6,6 +6,7 @@ import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { useCart } from "../../context/cartcontext";
+import toast from "react-hot-toast"; // ✅ Import toast
 
 interface Brand {
   title: string;
@@ -30,7 +31,7 @@ interface Props {
 
 const Shop: React.FC<Props> = ({ products = [] }) => {
   const { isSignedIn } = useUser();
-  const { addToCart } = useCart(); // ✅
+  const { addToCart } = useCart();
   const [isHovered, setIsHovered] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
@@ -48,23 +49,37 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
     }
   }, []);
 
-  const toggleWishlist = (productId: string) => {
-    if (!isSignedIn) return;
-    const newWishlist = new Set(wishlist);
-    if (newWishlist.has(productId)) {
-      newWishlist.delete(productId);
-    } else {
-      newWishlist.add(productId);
+  const toggleWishlist = (productId: string, productName: string) => {
+    if (!isSignedIn) {
+      toast.error("Please sign in to use wishlist.");
+      return;
     }
+
+    const newWishlist = new Set(wishlist);
+    const isAdding = !newWishlist.has(productId);
+
+    if (isAdding) {
+      newWishlist.add(productId);
+      toast.success(`${productName} added to wishlist!`);
+    } else {
+      newWishlist.delete(productId);
+      toast.error("Removed from wishlist");
+    }
+
     setWishlist(newWishlist);
     localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
+
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("wishlistUpdated"));
     }
   };
 
-  // ✅ Add to cart handler
   const handleAddToCart = (product: Product) => {
+    if (!isSignedIn) {
+      toast.error("Please sign in to add items to your cart.");
+      return;
+    }
+
     addToCart({
       _id: product._id,
       name: product.name,
@@ -73,6 +88,7 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
       images: product.images,
       brand: product.brand,
     });
+    toast.success(`${product.name} added to cart!`);
   };
 
   const filteredProducts =
@@ -80,7 +96,14 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
       ? products
       : products.filter((p) => p.variant === selectedCategory);
 
-  const categories = ["all", "cricket", "badminton", "basketball", "football", "other"];
+  const categories = [
+    "all",
+    "cricket",
+    "badminton",
+    "basketball",
+    "football",
+    "other",
+  ];
 
   return (
     <div className="bg-black text-white relative">
@@ -105,7 +128,9 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
 
       {/* Category Tabs */}
       <section className="py-10 px-4 xl:px-10">
-        <div className="max-w-360 px-4 xl:px-10 mx-auto"> {/* ✅ fixed max-w-360 → max-w-7xl */}
+        <div className="max-w-360 mx-auto px-4 xl:px-10">
+          {" "}
+          {/* ✅ corrected max-w */}
           <div className="flex flex-wrap justify-center gap-3 md:gap-4">
             {categories.map((cat) => (
               <button
@@ -127,11 +152,17 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
       {/* Products Grid */}
       <section className="py-12 px-4 xl:px-10 pb-20">
         <div className="max-w-360 mx-auto px-4 xl:px-10">
+          {" "}
+          {/* ✅ corrected max-w */}
           {filteredProducts.length === 0 ? (
             <div className="text-center py-24">
               <ShoppingCart className="w-16 h-16 text-gray-600 mx-auto mb-6" />
-              <p className="text-gray-400 text-xl font-medium">No products found in this category.</p>
-              <p className="text-gray-500 mt-2">Try selecting a different sport.</p>
+              <p className="text-gray-400 text-xl font-medium">
+                No products found in this category.
+              </p>
+              <p className="text-gray-500 mt-2">
+                Try selecting a different sport.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -151,10 +182,15 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
                     <div className="relative h-64 overflow-hidden bg-gray-800">
                       {product.images?.[0] ? (
                         <img
-                          src={urlFor(product.images[0]).width(500).height(500).url()}
+                          src={urlFor(product.images[0])
+                            .width(500)
+                            .height(500)
+                            .url()}
                           alt={product.name}
                           className={`w-full h-full object-cover transition-transform duration-500 ${
-                            isHovered === product._id ? "scale-110" : "scale-100"
+                            isHovered === product._id
+                              ? "scale-110"
+                              : "scale-100"
                           }`}
                         />
                       ) : (
@@ -170,45 +206,45 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
                             product.status === "new"
                               ? "bg-green-600"
                               : product.status === "hot"
-                              ? "bg-orange-600"
-                              : "bg-red-600"
+                                ? "bg-orange-600"
+                                : "bg-red-600"
                           } text-white`}
                         >
                           {product.status}
                         </div>
                       )}
 
-                      {/* Wishlist Heart */}
-                      {isSignedIn && (
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleWishlist(product._id);
-                          }}
-                          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 
-                                     flex items-center justify-center hover:border-red-500 hover:border transition-colors"
-                          aria-label={
-                            wishlist.has(product._id)
-                              ? "Remove from wishlist"
-                              : "Add to wishlist"
+                      {/* Wishlist Heart — now works for guests too with feedback */}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleWishlist(product._id, product.name);
+                        }}
+                        className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 
+                                   flex items-center justify-center hover:border-red-500 hover:border transition-colors"
+                        aria-label={
+                          wishlist.has(product._id) && isSignedIn
+                            ? "Remove from wishlist"
+                            : "Add to wishlist"
+                        }
+                      >
+                        <Heart
+                          size={18}
+                          className={
+                            wishlist.has(product._id) && isSignedIn
+                              ? "text-red-500 fill-current"
+                              : "text-white group-hover:text-red-500"
                           }
-                        >
-                          <Heart
-                            size={18}
-                            className={
-                              wishlist.has(product._id)
-                                ? "text-red-500 fill-current"
-                                : "text-white group-hover:text-red-500"
-                            }
-                          />
-                        </button>
-                      )}
+                        />
+                      </button>
 
-                      {/* Hover Overlay — ✅ FIXED ADD TO CART */}
+                      {/* Hover Overlay — Add to Cart */}
                       <div
                         className={`absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${
-                          isHovered === product._id ? "opacity-100" : "opacity-0"
+                          isHovered === product._id
+                            ? "opacity-100"
+                            : "opacity-0"
                         }`}
                       >
                         <div className="absolute bottom-4 left-4 right-4">
@@ -218,7 +254,7 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
                               e.stopPropagation();
                               handleAddToCart(product);
                             }}
-                            className="w-full bg-red-600 hover:bg-red-700 py-2.5 rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-1.5 z-50"
+                            className="w-full bg-red-600 hover:bg-red-700 py-2.5 rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-1.5"
                           >
                             <ShoppingCart size={14} />
                             Add to Cart
@@ -238,7 +274,11 @@ const Shop: React.FC<Props> = ({ products = [] }) => {
                       </h3>
                       <div className="flex items-center gap-1 mb-3">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={16} className="fill-yellow-400 text-yellow-400" />
+                          <Star
+                            key={i}
+                            size={16}
+                            className="fill-yellow-400 text-yellow-400"
+                          />
                         ))}
                       </div>
                       <div className="flex items-center justify-between">
